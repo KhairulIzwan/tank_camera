@@ -35,19 +35,18 @@ class range_detector_node:
 		self.img = np.zeros((240,320,3), np.uint8)
 
 		""" Initializing your ROS Node """
-		rospy.init_node('range_detector_node', anonymous=True)
+		rospy.init_node('color_range_node', anonymous=True)
 
 		rospy.on_shutdown(self.shutdown)
 
 		""" Give the OpenCV display window a name """
-		self.cv_window_name = "Range Detector Node"
+		self.cv_window_name = "Color Range Apps Node"
 
 		""" Create the cv_bridge object """
 		self.bridge = CvBridge()
 
 		""" Subscribe to the raw camera image topic """
-		self.imgRaw_sub = rospy.Subscriber("/camPi/image_raw", Image, self.callback)
-	#        self.imgRaw_sub = rospy.Subscriber("/usb_opencv_img", Image, self.callback)
+		self.imgRaw_sub = rospy.Subscriber("/cv_camera/image_raw", Image, self.callback)
 
 		""" Publish as color range topic """
 	#        self.rangeColor_pub = rospy.Publisher("/color_range", IntList, queue_size=10)
@@ -149,7 +148,7 @@ def main(args):
 	try:
 		rospy.spin()
 	except KeyboardInterrupt:
-		rospy.loginfo("Range detector node [OFFLINE]...")
+		rospy.loginfo("Color Range Apps node [OFFLINE]...")
 
 	cv2.destroyAllWindows()
 
@@ -158,5 +157,5 @@ if __name__ == '__main__':
 #		print(usage())
 #		sys.exit(1)
 #	else:
-	rospy.loginfo("Range detector node [ONLINE]...")
+	rospy.loginfo("Color Range Apps node [ONLINE]...")
 	main(sys.argv)
