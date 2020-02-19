@@ -52,7 +52,7 @@
 >>> rosrun tank_camera color_range_trackbar.py
 
 ## Face Detection
-> ### Color range apps
+> ### Detecting faces on camera
 >> Terminal # 1
 >>> roscore
 
