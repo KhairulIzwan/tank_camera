@@ -50,3 +50,14 @@
 
 >> Terminal # 3
 >>> rosrun tank_camera color_range_trackbar.py
+
+## Face Detection
+> ### Color range apps
+>> Terminal # 1
+>>> roscore
+
+>> Terminal # 2
+>>> rosrun cv_camera cv_camera_node _device:=/dev/video0 _image_width:=320 _image_height:=240
+
+>> Terminal # 3
+>>> rosrun tank_camera face_detection.py
