@@ -20,6 +20,9 @@ from sensor_msgs.msg import RegionOfInterest
 class TankFaceDetector:
 
 	def __init__(self):
+		# Create an empty arrays for save rects value later
+		self.rects = []
+		
 		# Initializing your ROS Node
 		rospy.init_node("face_detector_node", anonymous=True)
 
@@ -42,8 +45,8 @@ class TankFaceDetector:
 		
 	def callback_camerainfo(self, data):
 		# Get the image width and height
-		self.W = data.width
-		self.H = data.height
+		self.w = data.width
+		self.h = data.height
 	
 	def callback_image(self, data):
 		# Convert ros --> opencv
@@ -51,21 +54,6 @@ class TankFaceDetector:
 		
 		# Detect face
 		self.track()
-
-		# loop over the face bounding boxes and draw them
-		for rect in self.rects:
-			cv2.rectangle(self.frameClone, (rect[0], rect[1]), (rect[2], rect[3]), (0, 255, 0), 2)
-
-			roi=RegionOfInterest()
-			roi.x_offset=rect[0]
-			roi.y_offset=rect[1]
-			roi.width=rect[2]
-			roi.height=rect[3]
-
-			self.pub.publish(roi)
-
-		cv2.imshow("Face", self.frameClone)
-		cv2.waitKey(1)
 	
 	def convert_ros_to_opencv_img(self, ros_image):
 		self.cv_image = self.bridge.imgmsg_to_cv2(ros_image)
@@ -74,19 +62,41 @@ class TankFaceDetector:
 		self.frameClone = self.cv_image.copy()
 
 	def track(self):
-		# Create an empty arrays for save rects value later
-		self.rects = []
-		
 		# Detect all faces in the input frame
 		faceRects = self.faceCascade.detectMultiScale(self.cv_image,
-			scaleFactor = 1.1, minNeighbors = 5, minSize = (30, 30),
+			scaleFactor = 1.05, minNeighbors = 9, minSize = (30, 30),
 			flags = cv2.CASCADE_SCALE_IMAGE)
 
-		# Loop over the face bounding boxes
-		for (fX, fY, fW, fH) in faceRects:
-			# Extract the face ROI and update the list of bounding boxes
-			faceROI = self.cv_image[fY:fY + fH, fX:fX + fW]
-			self.rects.append((fX, fY, fX + fW, fY + fH))
+		# check to see if a face was found
+		if len(faceRects) > 0:
+			# extract the bounding box coordinates of the face and
+			# use the coordinates to determine the center of the
+			# face
+			(x, y, self.w, self.h) = faceRects[0]
+			faceX = int(x + (self.w / 2.0))
+			faceY = int(y + (self.h / 2.0))
+			
+			# Extract the bounding box and draw it
+			if faceRects is not None:
+				(x, y, w, h) = faceRects[0]
+				cv2.rectangle(self.frameClone, (x, y), (x + w, y + h), (0, 255, 0),
+				2)
+
+				roi=RegionOfInterest()
+				roi.x_offset=faceRects[0][0]
+				roi.y_offset=faceRects[0][1]
+				roi.width=faceRects[0][2]
+				roi.height=faceRects[0][3]
+
+				self.pub.publish(roi)
+		
+		# display the frame to the screen
+		cv2.imshow("Face", self.frameClone)
+		cv2.waitKey(1)
+			
+			
+			
+		
 
 	def shutdown(self):
 		try:
