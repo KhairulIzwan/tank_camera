@@ -38,7 +38,7 @@ class TankFaceDetector:
 		self.pub = rospy.Publisher("/roi", RegionOfInterest, queue_size=10)
 
 		# Path to input Haar cascade for face detection
-		self.faceCascade = cv2.CascadeClassifier("/home/pi/catkin_ws/src/tank_camera/library/haarcascade_frontalface_default.xml")
+		self.faceCascade = cv2.CascadeClassifier("/home/khairulizwan/catkin_ws/src/tank_camera/library/haarcascade_frontalface_default.xml")
 		
 	def callback_camerainfo(self, data):
 		# Get the image width and height
@@ -64,7 +64,7 @@ class TankFaceDetector:
 
 			self.pub.publish(roi)
 
-		cv2.imshow("Face", self.frameClone)
+		cv2.imshow("Face Detector", self.frameClone)
 		cv2.waitKey(1)
 	
 	def convert_ros_to_opencv_img(self, ros_image):
