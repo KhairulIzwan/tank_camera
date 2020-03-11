@@ -7,9 +7,6 @@
 from __future__ import print_function
 from __future__ import division
 
-#import roslib
-#roslib.load_manifest('turtlebot3_camera')
-
 import sys
 import rospy
 import os
@@ -20,8 +17,6 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import RegionOfInterest
 from sensor_msgs.msg import CameraInfo
-
-#from camera_tutorials.msg import IntList
 
 from cv_bridge import CvBridge
 from cv_bridge import CvBridgeError
@@ -34,49 +29,49 @@ class range_detector_node:
 		
 		self.img = np.zeros((240,320,3), np.uint8)
 
-		""" Initializing your ROS Node """
+		# Initializing your ROS Node
 		rospy.init_node('color_range_node', anonymous=True)
 
 		rospy.on_shutdown(self.shutdown)
 
-		""" Give the OpenCV display window a name """
+		# Give the OpenCV display window a name
 		self.cv_window_name = "Color Range Apps Node"
 
-		""" Create the cv_bridge object """
+		# Create the cv_bridge object
 		self.bridge = CvBridge()
 
-		""" Subscribe to the raw camera image topic """
+		# Subscribe to the raw camera image topic
 		self.imgRaw_sub = rospy.Subscriber("/cv_camera/image_raw", Image, self.callback)
 
-		""" Publish as color range topic """
-	#        self.rangeColor_pub = rospy.Publisher("/color_range", IntList, queue_size=10)
+		# Publish as color range topic
+		# self.rangeColor_pub = rospy.Publisher("/color_range", IntList, queue_size=10)
 
 	def callback(self, data):
-		""" Convert the raw image to OpenCV format """
+		# Convert the raw image to OpenCV format
 		self.cvtImage(data)
 
-		""" Determine the range_filter using the setup_trackbars() helper function """
+		# Determine the range_filter using the setup_trackbars() helper function
 		self.setup_trackbars()
 
-		""" Convert the image colorspace """
+		# Convert the image colorspace
 		self.cvtColorspace()
 
-		""" Extract the require color value """
+		# Extract the require color value
 		self.get_trackbar_values()
 
-		""" Publish Data """
-	#        self.pubData()
+		# Publish Data
+		# self.pubData()
 
-		""" Threshold the image """
+		# Threshold the image
 		self.imgThresh()
 
-		""" Refresh the image on the screen """
+		# Refresh the image on the screen
 		self.displayImg()
 
-	""" Convert the raw image to OpenCV format """
+	# Convert the raw image to OpenCV format
 	def cvtImage(self, data):
 		try:
-			""" Convert the raw image to OpenCV format """
+			# Convert the raw image to OpenCV format
 			self.cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
 
 		except CvBridgeError as e:
@@ -105,8 +100,8 @@ class range_detector_node:
 
 	""" Convert the image colorspace """
 	def cvtColorspace(self):
-        	self.frame_to_thresh = cv2.cvtColor(self.cv_image, cv2.COLOR_BGR2HSV)
-        	self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
+		self.frame_to_thresh = cv2.cvtColor(self.cv_image, cv2.COLOR_BGR2HSV)
+		self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
 
 	""" Refresh the image on the screen """
 	def displayImg(self):
